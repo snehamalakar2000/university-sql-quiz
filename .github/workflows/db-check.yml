@@ -1,0 +1,26 @@
+name: Database check
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # adds a "Run workflow" button in the Actions tab
+
+jobs:
+  check-database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the Postgres driver
+        run: pip install "psycopg[binary]"
+
+      - name: Connect to Supabase and verify the quiz
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}   # read from GitHub Secrets, never written in this file
+        run: python ci_check.py
